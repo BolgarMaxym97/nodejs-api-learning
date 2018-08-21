@@ -9,7 +9,7 @@ module.exports = (app, db) => {
             res.json({success: false, message: 'Please enter email and password.'});
         } else {
             let newUser = new User(req.body);
-            newUser.save(function (err, user) {
+            newUser.save((err, user) => {
                 if (err) {
                     return res.json({success: false, message: 'That email address already exists or server error.'});
                 }
@@ -19,16 +19,16 @@ module.exports = (app, db) => {
     });
 
     // Authenticate the user and get a JSON Web Token to include in the header of future requests.
-    app.post('/login', function (req, res) {
+    app.post('/login', (req, res) => {
         User.findOne({
             email: req.body.email
-        }, function (err, user) {
+        }, (err, user) => {
             if (err) throw err;
 
             if (!user) {
                 res.send({success: false, message: 'Authentication failed. User not found.'});
             } else {
-                user.comparePassword(req.body.password, function (err, isMatch) {
+                user.comparePassword(req.body.password, (err, isMatch) => {
                     if (isMatch && !err) {
                         let token = jwt.sign(user.toJSON(), config.secret, {
                             expiresIn: 10800

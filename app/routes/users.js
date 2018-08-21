@@ -1,5 +1,6 @@
 const User = require('@models/user');
 const passport = require('passport');
+// noinspection JSAnnotator
 require('@config/passport')(passport);
 
 module.exports = (app, db) => {
@@ -11,7 +12,7 @@ module.exports = (app, db) => {
     });
 
     //Create user
-    app.post('/user', (req, res) => {
+    app.post('/user', passport.authenticate('jwt', {session: false}), (req, res) => {
         let newUser = new User(req.body);
         newUser.save((err, user) => {
             if (err) {
@@ -23,7 +24,7 @@ module.exports = (app, db) => {
     });
 
     //Delete user
-    app.delete('/user', (req, res) => {
+    app.delete('/user', passport.authenticate('jwt', {session: false}), (req, res) => {
         User.remove({_id: req.body.id}, (err, removed) => {
             if (removed.n !== 0) {
                 res.json(true);
