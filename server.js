@@ -1,16 +1,19 @@
 const moduleAlias = require('module-alias/register');
-const dotenv = require('dotenv');
 const mongoose = require('mongoose');
 const express = require('express');
 const bodyParser = require('body-parser');
+const morgan = require('morgan');
+const passport = require('passport');
+const config = require('@config/main');
 const app = express();
 const port = 8000;
 
-dotenv.config();
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
+app.use(morgan('dev'));
+app.use(passport.initialize());
 
-mongoose.connect(process.env.MONGO_URL, {
+mongoose.connect(config.database, {
     useNewUrlParser: true
 }).then(() => console.log('-Connection to DB is successfully'))
     .catch(e => console.log('-Connection error-' + e));

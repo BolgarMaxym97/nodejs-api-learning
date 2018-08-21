@@ -1,10 +1,12 @@
 const User = require('@models/user');
+const passport = require('passport');
+require('@config/passport')(passport);
 
 module.exports = (app, db) => {
     // Get users
-    app.get('/users', (req, res) => {
+    app.get('/users', passport.authenticate('jwt', {session: false}), (req, res) => {
         User.find().select('id name age').exec((err, users) => {
-            res.send(users);
+            res.json(users);
         })
     });
 
@@ -13,9 +15,9 @@ module.exports = (app, db) => {
         let newUser = new User(req.body);
         newUser.save((err, user) => {
             if (err) {
-                res.send(err)
+                res.json(err)
             } else {
-                res.send(user)
+                res.json(user)
             }
         });
     });
@@ -24,9 +26,9 @@ module.exports = (app, db) => {
     app.delete('/user', (req, res) => {
         User.remove({_id: req.body.id}, (err, removed) => {
             if (removed.n !== 0) {
-                res.send(true);
+                res.json(true);
             } else {
-                res.send(false);
+                res.json(false);
             }
         });
     });

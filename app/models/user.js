@@ -1,4 +1,6 @@
 const mongoose = require('mongoose');
+const bcrypt = require('bcrypt');
+
 const Schema = mongoose.Schema;
 
 const UserSchema = new Schema({
@@ -6,9 +8,11 @@ const UserSchema = new Schema({
         type: String,
         required: [true, 'Name is required'],
     },
-    age: {
-        type: Number,
-        required: [true, 'Age is required'],
+    email: {
+        type: String,
+        lowercase: true,
+        unique: true,
+        required: true
     },
     username: {
         type: String,
@@ -19,8 +23,45 @@ const UserSchema = new Schema({
         type: String,
         required: true
     },
+    role: {
+        type: String,
+        enum: ['Client', 'Manager', 'Admin'],
+        default: 'Client'
+    }
 
 });
+
+// Saves the user's password hashed (plain text password storage is not good)
+UserSchema.pre('save', function (next) {
+    let user = this;
+    if (this.isModified('password') || this.isNew) {
+        bcrypt.genSalt(10, function (err, salt) {
+            if (err) {
+                return next(err);
+            }
+            bcrypt.hash(user.password, salt, function (err, hash) {
+                if (err) {
+                    return next(err);
+                }
+                user.password = hash;
+                next();
+            });
+        });
+    } else {
+        return next();
+    }
+});
+
+// Create method to compare password input to password saved in database
+UserSchema.methods.comparePassword = function (pw, cb) {
+    bcrypt.compare(pw, this.password, function (err, isMatch) {
+        if (err) {
+            return cb(err);
+        }
+        cb(null, isMatch);
+    });
+};
+
 let User = mongoose.model('users', UserSchema);
 
 module.exports = User;
