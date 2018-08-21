@@ -8,6 +8,7 @@ const port = 8000;
 
 dotenv.config();
 app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.json());
 
 mongoose.connect(process.env.MONGO_URL, {
     useNewUrlParser: true
