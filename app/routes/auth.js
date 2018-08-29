@@ -24,14 +24,13 @@ module.exports = (app, db) => {
             email: req.body.email
         }, (err, user) => {
             if (err) throw err;
-
             if (!user) {
                 res.send({success: false, message: 'Authentication failed. User not found.'});
             } else {
                 user.comparePassword(req.body.password, (err, isMatch) => {
                     if (isMatch && !err) {
                         let token = jwt.sign(user.toJSON(), config.secret, {
-                            expiresIn: 10800
+                            expiresIn: config.token_expires_time
                         });
                         res.json({success: true, token: 'JWT ' + token});
                     } else {
