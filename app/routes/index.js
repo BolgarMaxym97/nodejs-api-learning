@@ -2,8 +2,9 @@ const passport = require('passport');
 // noinspection JSAnnotator
 require('@config/passport')(passport);
 
-const usersRouter = require('./users');
 const authRouter = require('./auth');
+const usersRouter = require('./users');
+const todoListRouter = require('./todoList');
 
 module.exports = (app, db) => {
     // Unprotected routes
@@ -12,9 +13,10 @@ module.exports = (app, db) => {
         next();
     });
 
+    // Protected routes
     app.use('/', passport.authenticate('jwt', {session: false}), (req, res, next) => {
-        // Protected routes
         usersRouter(app, db);
+        todoListRouter(app, db);
         next();
     });
 };

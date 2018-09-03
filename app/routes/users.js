@@ -6,8 +6,15 @@ require('@config/passport')(passport);
 module.exports = (app, db) => {
     // Get users
     app.get('/users', (req, res) => {
-        User.find().select('id name age').exec((err, users) => {
+        User.find().select('id name role username').exec((err, users) => {
             res.json(users);
+        })
+    });
+
+    // Get user
+    app.get('/user', (req, res) => {
+        User.findOne().select('id name role username').exec((err, user) => {
+            res.json(user);
         })
     });
 

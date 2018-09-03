@@ -32,6 +32,7 @@ module.exports = (app, db) => {
                         let token = jwt.sign(user.toJSON(), config.secret, {
                             expiresIn: config.token_expires_time
                         });
+                        req.user = user;
                         res.json({success: true, token: 'JWT ' + token});
                     } else {
                         res.send({success: false, message: 'Authentication failed. Passwords did not match.'});
